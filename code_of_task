@@ -1,0 +1,61 @@
+from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait # подгрузка метода ожидания загрузки страницы
+from selenium.webdriver.support import expected_conditions as EC
+
+
+from selenium import webdriver
+import time
+
+# Настройки параметров ссесии браузера
+option = Options()
+option.add_argument("start-maximized")
+
+browser = webdriver.Firefox(options=option) # создаю окно браузера и передаю ему параметры
+browser.get('https://www.wildberries.ru/') # вызываю страницу в браузере
+
+# Ввожу в строку поиска
+time.sleep(20)
+input_web = browser.find_element(By.XPATH, "//input[@id = 'searchInput']")
+input_web.send_keys('носки') # передаю в строку поиска текст
+input_web.send_keys(Keys.ENTER) # нажимаю клавишу Enter
+
+# Список всех карточек товаров
+time.sleep(4)
+list_items = browser.find_elements(By.XPATH, "//a[@class='product-card__link j-card-link j-open-full-product-card']")
+print(list_items)
+print(len(list_items))
+
+time.sleep(1)
+# Прокртка вниз
+count = 0
+while True:
+    wait = WebDriverWait(browser, 30) # обьект класса ожидания прогрузки не более 30 сек
+
+    # ждет появление обновление html кода (передается картеж в .presence_of_element_located)
+    cards = wait.until(EC.presence_of_all_elements_located((By.XPATH, "//a[@class='product-card__link j-card-link j-open-full-product-card']")))
+
+    # # Общий список всех карточек
+    # list_items = browser.find_elements(By.XPATH, "//a[@class='product-card__link j-card-link j-open-full-product-card']")
+    browser.execute_script('scrollBy(0,2500)') # Обращаюсь к коду JS и прокручиваю страницу на 1000 пикселей вниз
+    time.sleep(3) # нужна небольшая задержка чтоб все элементу корректно прогрузились
+
+    if count == len(cards):
+        break
+    else:
+        count = len(cards)
+        print(count)
+
+
+
+
+
+
+# options = Options()
+# firefox_profile = FirefoxProfile()
+# firefox_profile.set_preference("javascript.enabled", False)
+# options.profile = firefox_profile
+#
+# driver = webdriver.Firefox(options=options)
