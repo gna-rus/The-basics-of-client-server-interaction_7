@@ -46,7 +46,7 @@ while True:
 
     # # Общий список всех карточек
     # list_items = browser.find_elements(By.XPATH, "//a[@class='product-card__link j-card-link j-open-full-product-card']")
-    browser.execute_script('scrollBy(0,2000)') # Обращаюсь к коду JS и прокручиваю страницу на 1000 пикселей вниз
+    browser.execute_script('scrollBy(0,2000)') # Обращаюсь к коду JS и прокручиваю страницу на 2000 пикселей вниз
     time.sleep(3) # нужна небольшая задержка чтоб все элементу корректно прогрузились
     cards = browser.find_elements(By.XPATH, "//article[@id]")
     print("cards:   ",cards)
@@ -56,16 +56,16 @@ while True:
 
 
 
-# for card in cards:
-# #     # name_items = card.find_element(By.XPATH, '//a[@class="product-card__link j-card-link j-open-full-product-card"]').get_attribute('aria-label')
+for card in cards:
+      name_items = card.find_element(By.XPATH, './div/a').get_attribute('aria-label')
+
 #     price = card.find_element((By.XPATH, '//ins[@class="price__lower-price"]')).text
 #     name_company = card.find_element(By.XPATH, '//span[@class="product-card__brand"]').text
-#     product_name = card.find_element(By.XPATH, '//span[@class="product-card__name"]').text
-#
-#     print(name_company, product_name, price)
-print(1)
-for i in cards:
-    print(i)
+      product_name = card.find_element(By.CSS_SELECTOR, 'span.product-card__name').text
+
+      print(name_items, '|', product_name)
+
+
 input()
 # options = Options()
 # firefox_profile = FirefoxProfile()
