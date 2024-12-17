@@ -11,12 +11,14 @@ from selenium import webdriver
 import time
 
 # Настройки параметров ссесии браузера
-option = Options()
+# option = Options()
+option = webdriver.FirefoxOptions()
 option.add_argument("start-maximized")
 
 # создаю окно браузера и передаю ему параметры
-browser = webdriver.Chrome(options=option)
-# browser = webdriver.Firefox(options=option)
+# browser = webdriver.Chrome(options=option)
+
+browser = webdriver.Firefox(options=option)
 browser.get('https://www.wildberries.ru/') # вызываю страницу в браузере
 
 # Ввожу в строку поиска
@@ -38,7 +40,7 @@ while True:
     wait = WebDriverWait(browser, 30) # обьект класса ожидания прогрузки не более 30 сек
 
     # ждет появление обновление html кода (передается картеж в .presence_of_element_located)
-    cards = wait.until(EC.presence_of_all_elements_located((By.XPATH, "//a[@class='product-card__link j-card-link j-open-full-product-card']")))
+    cards = wait.until(EC.presence_of_all_elements_located((By.XPATH, "//article[@id]")))
 
     # # Общий список всех карточек
     # list_items = browser.find_elements(By.XPATH, "//a[@class='product-card__link j-card-link j-open-full-product-card']")
@@ -51,14 +53,17 @@ while True:
         count = len(cards)
         print(count)
 
-
 for card in cards:
-    name_items = card.find_element(By.XPATH, './a[@class="product-card__link j-card-link j-open-full-product-card"]').get_attribute('aria-label')
-    print(name_items)
+    # name_items = card.find_element(By.XPATH, '//a[@class="product-card__link j-card-link j-open-full-product-card"]').get_attribute('aria-label')
+    price = card.find_element((By.XPATH, '//ins[@class="price__lower-price"]')).text
+    name_company = card.find_element(By.XPATH, '//span[@class="product-card__brand"]').text
+    product_name = card.find_element(By.XPATH, '//span[@class="product-card__name"]').text
 
+    print(name_company, product_name, price)
+
+for i in cards:
+    print(i)
 input()
-
-
 # options = Options()
 # firefox_profile = FirefoxProfile()
 # firefox_profile.set_preference("javascript.enabled", False)
