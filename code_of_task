@@ -5,7 +5,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait # подгрузка метода ожидания загрузки страницы
 from selenium.webdriver.support import expected_conditions as EC
-
+from selenium.webdriver.common.action_chains import ActionChains # реализация прокрутки страницы к необходимому элементу
 
 from selenium import webdriver
 import time
@@ -22,13 +22,13 @@ browser = webdriver.Chrome(options=option)
 browser.get('https://www.wildberries.ru/') # вызываю страницу в браузере
 
 # Ввожу в строку поиска
-time.sleep(20)
+time.sleep(10)
 input_web = browser.find_element(By.XPATH, "//input[@id = 'searchInput']")
 input_web.send_keys('телевизор') # передаю в строку поиска текст
 input_web.send_keys(Keys.ENTER) # нажимаю клавишу Enter
 
 # Список всех карточек товаров
-time.sleep(4)
+time.sleep(2)
 list_items = browser.find_elements(By.XPATH, "//a[@class='product-card__link j-card-link j-open-full-product-card']")
 print(list_items)
 
@@ -64,6 +64,22 @@ for card in cards:
       product_name = card.find_element(By.CSS_SELECTOR, 'span.product-card__name').text
 
       print(name_items, '|', product_name)
+print("###################")
+# # Клик на кнопку (1 способ)
+# bottom_next = browser.find_element(By.XPATH , "//a[@class='pagination-next pagination__next j-next-page']")
+# try:
+#     bottom_next.click()
+# except:
+#     print('Не перешел на следущую сраницу')
+
+# Клик на кнопку (2 способ, более умный)
+try:
+    bottom_next = browser.find_element(By.XPATH, "//a[@class='pagination-next pagination__next j-next-page']")
+    actions = ActionChains(browser) # создаю класс для активностей на странице
+    actions.move_to_element(bottom_next).pause(2).click() # ссоздаю цепочку действий которые будут потом одновременно сделаны
+    actions.perform() # запускаю все действия что ранее записал
+except:
+    print('Не перешел на следущую сраницу')
 
 
 input()
