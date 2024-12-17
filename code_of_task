@@ -11,14 +11,14 @@ from selenium import webdriver
 import time
 
 # Настройки параметров ссесии браузера
-# option = Options()
-option = webdriver.FirefoxOptions()
+option = Options()
+# option = webdriver.FirefoxOptions()
 option.add_argument("start-maximized")
 
 # создаю окно браузера и передаю ему параметры
-# browser = webdriver.Chrome(options=option)
+browser = webdriver.Chrome(options=option)
 
-browser = webdriver.Firefox(options=option)
+# browser = webdriver.Firefox(options=option)
 browser.get('https://www.wildberries.ru/') # вызываю страницу в браузере
 
 # Ввожу в строку поиска
@@ -31,36 +31,39 @@ input_web.send_keys(Keys.ENTER) # нажимаю клавишу Enter
 time.sleep(4)
 list_items = browser.find_elements(By.XPATH, "//a[@class='product-card__link j-card-link j-open-full-product-card']")
 print(list_items)
-print(len(list_items))
 
 time.sleep(1)
 # Прокртка вниз
-count = 0
+
+
 while True:
     wait = WebDriverWait(browser, 30) # обьект класса ожидания прогрузки не более 30 сек
 
     # ждет появление обновление html кода (передается картеж в .presence_of_element_located)
     cards = wait.until(EC.presence_of_all_elements_located((By.XPATH, "//article[@id]")))
+    count = len(cards)
+    print("count=",count)
 
     # # Общий список всех карточек
     # list_items = browser.find_elements(By.XPATH, "//a[@class='product-card__link j-card-link j-open-full-product-card']")
-    browser.execute_script('scrollBy(0,2500)') # Обращаюсь к коду JS и прокручиваю страницу на 1000 пикселей вниз
+    browser.execute_script('scrollBy(0,2000)') # Обращаюсь к коду JS и прокручиваю страницу на 1000 пикселей вниз
     time.sleep(3) # нужна небольшая задержка чтоб все элементу корректно прогрузились
+    cards = browser.find_elements(By.XPATH, "//article[@id]")
+    print("cards:   ",cards)
 
     if count == len(cards):
         break
-    else:
-        count = len(cards)
-        print(count)
 
-for card in cards:
-    # name_items = card.find_element(By.XPATH, '//a[@class="product-card__link j-card-link j-open-full-product-card"]').get_attribute('aria-label')
-    price = card.find_element((By.XPATH, '//ins[@class="price__lower-price"]')).text
-    name_company = card.find_element(By.XPATH, '//span[@class="product-card__brand"]').text
-    product_name = card.find_element(By.XPATH, '//span[@class="product-card__name"]').text
 
-    print(name_company, product_name, price)
 
+# for card in cards:
+# #     # name_items = card.find_element(By.XPATH, '//a[@class="product-card__link j-card-link j-open-full-product-card"]').get_attribute('aria-label')
+#     price = card.find_element((By.XPATH, '//ins[@class="price__lower-price"]')).text
+#     name_company = card.find_element(By.XPATH, '//span[@class="product-card__brand"]').text
+#     product_name = card.find_element(By.XPATH, '//span[@class="product-card__name"]').text
+#
+#     print(name_company, product_name, price)
+print(1)
 for i in cards:
     print(i)
 input()
