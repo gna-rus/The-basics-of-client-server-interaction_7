@@ -1,0 +1,57 @@
+from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait # подгрузка метода ожидания загрузки страницы
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.action_chains import ActionChains # реализация прокрутки страницы к необходимому элементу
+
+import requests
+from bs4 import BeautifulSoup
+import urllib.parse
+from datetime import datetime, time, timedelta
+import time
+import re
+import json
+
+from selenium import webdriver
+import time
+
+# Настройки параметров ссесии браузера
+option = Options()
+# option = webdriver.FirefoxOptions()
+option.add_argument("start-maximized")
+
+# создаю окно браузера и передаю ему параметры
+browser = webdriver.Chrome(options=option)
+
+# browser = webdriver.Firefox(options=option)
+browser.get('https://www.foroffice.ru/') # вызываю страницу сайта промышленного оборудования в браузере
+
+
+
+# wait = WebDriverWait(browser, 30)
+# Ввожу информацию в строку поиска и кликаю на "лупу" для осуществления поиска по сайту
+input_web = browser.find_element(By.ID, "__BVID__17")
+input_web.send_keys('резак')
+element = WebDriverWait(browser, 20).until(EC.element_to_be_clickable((By.XPATH, '//button[@class="btn btn-blue search-button"]')))
+element.click()
+
+# Получаю url текущей страница
+current_url = browser.current_url
+print('URL:',current_url, sep='\n')
+
+# Парсинг HTML-содержимого веб-страницы с помощью Beautiful Soup
+soup = BeautifulSoup(response.content, 'html.parser')
+
+# Создаю список товаров
+release_links = []
+for link in soup.find_all('div', ('class', 'center col')):
+    try:
+        release_links.append(link.find('a').get('href'))
+    except:
+        release_links.append('None')
+print(release_links)
+input()
+browser.quit()
