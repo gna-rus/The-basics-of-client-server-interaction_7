@@ -17,7 +17,7 @@ ua = UserAgent()
 fake_user = ua.random # создаю фейкового юзера
 
 # Запрос веб-страницы
-url = f'https://www.foroffice.ru'
+url = f'https://www.foroffice.ru/search/search_results.php?q=%F0%E5%E7%E0%EA'
 response = requests.get(url, verify=False) # Получаю get запрос по API
 print(response)
 
@@ -29,7 +29,8 @@ print(soup)
 #
 # Создаю списко ссылок вакансий
 release_links = []
-for link in soup.find_all('div', ('class', 'magritte-card___bhGKz_6-1-14 magritte-card-border-radius-24___o72BE_6-1-14 magritte-card-stretched___0Uc0J_6-1-14 magritte-card-action___4A43B_6-1-14 magritte-card-shadow-on-hover___BoRL3_6-1-14 magritte-card-with-border___3KsrG_6-1-14')):
+print(soup.find_all("div", attrs={"id": "scripts-from-app"}))
+for link in soup.find_all('div', ('class', 'name-block')):
     try:
         release_links.append(link.find('a').get('href'))
     except:
