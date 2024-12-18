@@ -1,0 +1,38 @@
+import requests
+from bs4 import BeautifulSoup
+import urllib.parse
+from datetime import datetime, time, timedelta
+import time
+import re
+import json
+from fake_useragent import UserAgent
+from lxml import html
+from lxml import etree
+
+
+
+ua = UserAgent()
+
+
+fake_user = ua.random # создаю фейкового юзера
+
+# Запрос веб-страницы
+url = f'https://www.foroffice.ru'
+response = requests.get(url, verify=False) # Получаю get запрос по API
+print(response)
+
+# dom = html.fromstring(response.text)
+# print(dom)
+# Парсинг HTML-содержимого веб-страницы с помощью Beautiful Soup
+soup = BeautifulSoup(response.text, 'html.parser')
+print(soup)
+#
+# Создаю списко ссылок вакансий
+release_links = []
+for link in soup.find_all('div', ('class', 'magritte-card___bhGKz_6-1-14 magritte-card-border-radius-24___o72BE_6-1-14 magritte-card-stretched___0Uc0J_6-1-14 magritte-card-action___4A43B_6-1-14 magritte-card-shadow-on-hover___BoRL3_6-1-14 magritte-card-with-border___3KsrG_6-1-14')):
+    try:
+        release_links.append(link.find('a').get('href'))
+    except:
+        release_links.append('None')
+
+print(release_links)
