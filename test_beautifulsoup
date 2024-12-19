@@ -5,34 +5,51 @@ from datetime import datetime, time, timedelta
 import time
 import re
 import json
+from fake_useragent import UserAgent
 from lxml import html
 from lxml import etree
+from urllib.parse import urljoin
+
+from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait # подгрузка метода ожидания загрузки страницы
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.action_chains import ActionChains # реализация прокрутки страницы к необходимому элементу
 
 
+ua = UserAgent()
 
 
-
-
-fake_user = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:133.0) Gecko/20100101 Firefox/133.0"# создаю фейкового юзера
+fake_user = ua.random # создаю фейкового юзера
 
 # Запрос веб-страницы
-url = f'https://www.foroffice.ru/products/search/?q=%F0%E5%E7%E0%EA'
-response = requests.get(url, headers = {'User-Agent' : fake_user}, verify=False) # Получаю get запрос по API
-print(response)
+url = f'https://www.foroffice.ru/search/search_results.php?q=%F0%E5%E7%E0%EA'
+response = requests.get("https://www.foroffice.ru/products/search/?q=%F0%E5%E7%E0%EA", headers = {'User-Agent' : fake_user}, verify=False) # Получаю get запрос по API
+print(response.url)
 
 # dom = html.fromstring(response.text)
 # print(dom)
 # Парсинг HTML-содержимого веб-страницы с помощью Beautiful Soup
-soup = BeautifulSoup(response.content, 'html.parser')
+soup = BeautifulSoup(response.text, 'html.parser')
 # print(soup)
-
-# Создаю списко ссылок вакансий
+# Создаю список ссылок вакансий
 release_links = []
+for link, info in zip(soup.find_all('div', ('class', 'product outer col-12 col-sm-12 linear')), soup.find_all('div', ('class', 'right col'))):
+    print(link)
 
-for link in soup.find_all('div', ('class', 'name-block')):
-    try:
-        release_links.append(link.find('a').get('href'))
-    except:
-        release_links.append('None')
+        # print(10)
+        # find_link= urljoin('https://www.foroffice.ru/', link.find('a').get('href')) # ссылка на
+        # name_item = link.find('a').text.strip() # наименование товара
+        #
+        # price = info.find('span').text.strip().split("\n") # вывожу стоимость товара и валюту в список
+        # print(name_item, price)
+        #
+        # release_links.append(find_link)
+        #
+        # release_links.append('None')
 
 print(release_links)
+
