@@ -80,6 +80,7 @@ input_web = browser.find_element(By.ID, "__BVID__17")
 input_web.send_keys('резак')
 element = WebDriverWait(browser, 20).until(EC.element_to_be_clickable((By.XPATH, '//button[@class="btn btn-blue search-button"]')))
 element.click()
+time.sleep(2)
 
 num_page = 2
 result_dict = dict()
@@ -88,8 +89,9 @@ for i in range(num_page):
     current_url = str(browser.current_url).strip()
     result_dict = {**result_dict, **info_from_page(current_url)}
 
-    element = WebDriverWait(browser, 20).until(EC.element_to_be_clickable((By.XPATH, '//a[@aria-label="Go to next page"]')))
-    element.click()
+    element_next_page = WebDriverWait(browser, 20).until(EC.element_to_be_clickable((By.XPATH, '//a[@aria-label="Go to next page"]')))
+    # aria-label="Go to page 2"
+    element_next_page.click()
 
 
 pprint(result_dict)
