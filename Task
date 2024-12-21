@@ -20,15 +20,55 @@ from pprint import pprint
 from selenium import webdriver
 import time
 
+
+def info_from_page(current_url):
+    """Функция для обработкы содержимого страницы результатов поиска
+    return: словарь с данными о результате поиска
+    """
+    # Так как ссылка на станицу от Selenium отличается от ссылки которую получаю при ручном поиске, и ссылка от Seleium не парсится, но эта ссылка содержит кодировку котурую можно применить для создания ссылки которую можно пропарсить
+    print('URL:', current_url, sep='\n')
+    print()
+    find_key_word = current_url.find('q=')
+    url = f'https://www.foroffice.ru/products/search/?' + current_url[find_key_word:]
+    fake_user = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:133.0) Gecko/20100101 Firefox/133.0"
+    response = requests.get(url, headers={'User-Agent': fake_user}, verify=False)  # Получаю get запрос по API
+    print(response, url)
+    # , verify=False
+    # Парсинг HTML-содержимого веб-страницы с помощью Beautiful Soup
+    soup = BeautifulSoup(response.content, 'html.parser')
+    release_links = []
+    result_dict = {}  # Словарь с информацией о товаре
+
+    # Собираю информацию о товаре с первой странице
+    # print(soup.find_all('div', ('class', 'right col')))
+    for link, info in zip(soup.find_all('div', ('class', "center col")), soup.find_all('div', ('class', 'right col'))):
+        try:
+            name_item = str(link.find('a').text.strip())  # наименование товара
+            print(name_item)
+
+            find_link = 'https://www.foroffice.ru/' + str(link.find('a').get('href'))  # ссылка
+            print(find_link)
+
+            price = info.find('span').text.strip().split("\n")  # вывожу стоимость товара и валюту в список
+            print(price)
+
+            result_dict[find_link] = [name_item, price]
+        except:
+            release_links.append('None')
+    time.sleep(1)
+    return result_dict
+
+
+
 # Настройки параметров ссесии браузера
-option = webdriver.ChromeOptions()
-# option = webdriver.FirefoxOptions()
+# option = webdriver.ChromeOptions()
+option = webdriver.FirefoxOptions()
 
 option.add_argument("start-maximized")
 
 # создаю окно браузера и передаю ему параметры
-browser = webdriver.Chrome(options=option)
-# browser = webdriver.Firefox(options=option)
+# browser = webdriver.Chrome(options=option)
+browser = webdriver.Firefox(options=option)
 
 browser.get('https://www.foroffice.ru/') # вызываю страницу сайта промышленного оборудования в браузере
 
@@ -41,48 +81,15 @@ input_web.send_keys('резак')
 element = WebDriverWait(browser, 20).until(EC.element_to_be_clickable((By.XPATH, '//button[@class="btn btn-blue search-button"]')))
 element.click()
 
-# Получаю url текущей страница
-current_url = str(browser.current_url).strip()
-# current_url = "https://www.foroffice.ru/search/search_results.php?q=%F0%E5%E7%E0%EA"
+num_page = 2
+result_dict = dict()
+for i in range(num_page):
+    # Получаю url текущей страница
+    current_url = str(browser.current_url).strip()
+    result_dict = {**result_dict, **info_from_page(current_url)}
 
-# Так как ссылка на станицу от Selenium отличается от ссылки которую получаю при ручном поиске, и ссылка от Seleium не парсится, но эта ссылка содержит кодировку котурую можно применить для создания ссылки которую можно пропарсить
-print('URL:',current_url, sep='\n')
-print()
-find_key_word = current_url.find('q=')
-url =  f'https://www.foroffice.ru/products/search/?' + current_url[find_key_word:]
-fake_user = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:133.0) Gecko/20100101 Firefox/133.0"
-response = requests.get(url, headers = {'User-Agent' : fake_user}, verify=False) # Получаю get запрос по API
-print(response, url)
-# , verify=False
-# Парсинг HTML-содержимого веб-страницы с помощью Beautiful Soup
-soup = BeautifulSoup(response.content, 'html.parser')
-release_links = []
-result_dict = {} # Словарь с информацией о товаре
-
-# Собираю информацию о товаре с первой странице
-# print(soup.find_all('div', ('class', 'right col')))
-for link, info in zip(soup.find_all('div', ('class', "center col")), soup.find_all('div', ('class', 'right col'))):
-    try:
-        name_item = link.find('a').text.strip()  # наименование товара
-        print(name_item)
-
-        find_link= 'https://www.foroffice.ru/' + str(link.find('a').get('href')) # ссылка
-        print(find_link)
-
-        price = info.find('span').text.strip().split("\n")  # вывожу стоимость товара и валюту в список
-        print(price)
-
-        result_dict[find_link] = [name_item, price]
-    except:
-        release_links.append('None')
-
-# for info in soup.find_all('div', ('class', 'right col')):
-#     try:
-#         price = info.find('span').text.strip().split("\n") # вывожу стоимость товара и валюту в список
-#         print(price)
-#     except:
-#         release_links.append('None')
-
+    element = WebDriverWait(browser, 20).until(EC.element_to_be_clickable((By.XPATH, '//a[@aria-label="Go to next page"]')))
+    element.click()
 
 
 pprint(result_dict)
