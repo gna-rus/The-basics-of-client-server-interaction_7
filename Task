@@ -20,16 +20,23 @@ from pprint import pprint
 from selenium import webdriver
 import time
 
+def generate_url(base_url, num):
+    """Функция для генерация url страниц"""
+    print('URL:', current_url, sep='\n')
+    print()
+    find_key_word = base_url.find('q=')
+    url = f'https://www.foroffice.ru/products/search/?' + current_url[find_key_word:]+f'&PAGEN_1={num}'
+    # f'&PAGEN_1={num}' - эта часть url отвечает за номер страницы в результате поиска
+    return url
 
-def info_from_page(current_url):
+
+def info_from_page(current_url, num):
     """Функция для обработкы содержимого страницы результатов поиска
     return: словарь с данными о результате поиска
     """
     # Так как ссылка на станицу от Selenium отличается от ссылки которую получаю при ручном поиске, и ссылка от Seleium не парсится, но эта ссылка содержит кодировку котурую можно применить для создания ссылки которую можно пропарсить
-    print('URL:', current_url, sep='\n')
-    print()
-    find_key_word = current_url.find('q=')
-    url = f'https://www.foroffice.ru/products/search/?' + current_url[find_key_word:]
+    url = generate_url(current_url, num)
+    print(url)
     fake_user = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:133.0) Gecko/20100101 Firefox/133.0"
     response = requests.get(url, headers={'User-Agent': fake_user}, verify=False)  # Получаю get запрос по API
     print(response, url)
@@ -61,14 +68,14 @@ def info_from_page(current_url):
 
 
 # Настройки параметров ссесии браузера
-# option = webdriver.ChromeOptions()
-option = webdriver.FirefoxOptions()
+option = webdriver.ChromeOptions()
+# option = webdriver.FirefoxOptions()
 
 option.add_argument("start-maximized")
 
 # создаю окно браузера и передаю ему параметры
-# browser = webdriver.Chrome(options=option)
-browser = webdriver.Firefox(options=option)
+browser = webdriver.Chrome(options=option)
+# browser = webdriver.Firefox(options=option)
 
 browser.get('https://www.foroffice.ru/') # вызываю страницу сайта промышленного оборудования в браузере
 
@@ -82,19 +89,17 @@ element = WebDriverWait(browser, 20).until(EC.element_to_be_clickable((By.XPATH,
 element.click()
 time.sleep(2)
 
-num_page = 2
+num_page = 3
 result_dict = dict()
-for i in range(num_page):
+for i in range(1, num_page):
     # Получаю url текущей страница
     current_url = str(browser.current_url).strip()
-    result_dict = {**result_dict, **info_from_page(current_url)}
-
-    element_next_page = WebDriverWait(browser, 20).until(EC.element_to_be_clickable((By.XPATH, '//a[@aria-label="Go to next page"]')))
-    # aria-label="Go to page 2"
-    element_next_page.click()
-    time.sleep(5)
+    result_dict = {**result_dict, **info_from_page(current_url, i)}
+    time.sleep(3)
 
 
 pprint(result_dict)
+
+
 input()
 browser.quit()
