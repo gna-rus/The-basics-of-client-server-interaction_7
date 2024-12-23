@@ -65,6 +65,7 @@ def info_from_page(current_url, num):
     time.sleep(1)
     return result_dict
 
+# Передаю в переменную наименование искомого товара
 search = input("Поиск: ")
 
 # Настройки параметров ссесии браузера
@@ -85,14 +86,15 @@ browser.get('https://www.foroffice.ru/') # вызываю страницу са�
 input_web = browser.find_element(By.ID, "__BVID__17")
 input_web.send_keys(search)
 element = WebDriverWait(browser, 20).until(EC.element_to_be_clickable((By.XPATH, '//button[@class="btn btn-blue search-button"]')))
-element.click()
+element.click() # кликаю на клавишу поиска на странице
 time.sleep(2)
 
-num_page = 3
+num_page = 3 # количество страниц поиска
 result_dict = dict()
 for i in range(1, num_page):
     # Получаю url текущей страница
-    current_url = str(browser.current_url).strip()
+    current_url = str(browser.current_url).strip() # определяю страницу на которой оказался при поиске
+    browser.get(generate_url(current_url, i)) # переключась на другую страницу поиска
     result_dict = {**result_dict, **info_from_page(current_url, i)}
     time.sleep(3)
 
