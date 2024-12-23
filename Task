@@ -92,6 +92,7 @@ for i in range(num_page):
     element_next_page = WebDriverWait(browser, 20).until(EC.element_to_be_clickable((By.XPATH, '//a[@aria-label="Go to next page"]')))
     # aria-label="Go to page 2"
     element_next_page.click()
+    time.sleep(5)
 
 
 pprint(result_dict)
