@@ -65,7 +65,7 @@ def info_from_page(current_url, num):
     time.sleep(1)
     return result_dict
 
-
+search = input("Поиск: ")
 
 # Настройки параметров ссесии браузера
 option = webdriver.ChromeOptions()
@@ -80,11 +80,10 @@ browser = webdriver.Chrome(options=option)
 browser.get('https://www.foroffice.ru/') # вызываю страницу сайта промышленного оборудования в браузере
 
 
-
 # wait = WebDriverWait(browser, 30)
 # Ввожу информацию в строку поиска и кликаю на "лупу" для осуществления поиска по сайту
 input_web = browser.find_element(By.ID, "__BVID__17")
-input_web.send_keys('резак')
+input_web.send_keys(search)
 element = WebDriverWait(browser, 20).until(EC.element_to_be_clickable((By.XPATH, '//button[@class="btn btn-blue search-button"]')))
 element.click()
 time.sleep(2)
